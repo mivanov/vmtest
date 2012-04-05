@@ -1,0 +1,5 @@
+AWS_ACCESS_KEY_ID = ''
+AWS_SECRET_ACCESS_KEY = ''
+EC2_REGION = 'us-west-2'
+EC2_KEY_NAME = 'key'
+EC2_KEY_FILE = '/path/to/key.pem'

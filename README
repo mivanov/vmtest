@@ -1,0 +1,21 @@
+This is an effort to automate testing Ubuntu packages inside temporary EC2
+instances created on-demand. Not really there yet but it's a start.
+
+First, copy settings.py.template to settings.py and fill it in with your AWS
+credentials and other info. Then use it in your fabfile.py like this:
+
+from fabric.api import *
+from vm import *
+
+def my_task()
+    with temporary_ec2_instance(ami_id='ami-8cb33ebc'):
+        sudo('apt-get install mypackage')
+
+Specify the appropriate ami_id for the image you want (in the region you have
+set in settings.py).
+
+When this task is executed by Fabric, it will spin up a new instance, wait for
+it to boot up, and then set env.host_string so that Fabric can connect to it.
+You can only use this instance inside the 'with:' block, as when the block is
+exited for any reason, the instance will be terminated. This keeps tests as
+cheap as possible!
