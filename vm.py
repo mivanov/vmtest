@@ -17,23 +17,6 @@ from boto import ec2
 from fabric.api import env
 
 
-class dummy_instance:
-    def __init__(self, ami_id='ami-8cb33ebc'):
-        self.ami_id = ami_id
-
-    def __enter__(self):
-        print "spinning up dummy"
-        self.instance = "dummy_instance"
-        self.old_host_string = env.host_string
-
-        return self.instance
-
-    def __exit__(self, type, value, traceback):
-        print "terminating dummy"
-        env.host_string = self.old_host_string
-        return True
-
-
 class temporary_ec2_instance:
     def __init__(self, ami_id='ami-8cb33ebc'):
         self.instance = None
@@ -60,7 +43,7 @@ class temporary_ec2_instance:
         self.instance = res.instances[0]
         print "Spinning up instance. Waiting for it to start. "
         self.wait_until_state('running')
-        print " Instance running."
+        print "Instance running."
         print "Hostname: %s" % self.instance.public_dns_name
         print "Waiting for instance to finish booting up. "
         self.wait_until_booted()
@@ -74,5 +57,5 @@ class temporary_ec2_instance:
             self.instance.terminate()
             print "Terminating instance. "
             self.wait_until_state('terminated')
-            print " Instance terminated."
+            print "Instance terminated."
             return True

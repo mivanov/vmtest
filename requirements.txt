@@ -1,2 +1,5 @@
 Fabric==1.4.0
 boto==2.3.0
+shortuuid==0.2
+pexpect==2.4
+
