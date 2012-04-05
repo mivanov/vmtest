@@ -1,0 +1,3 @@
+[submodule "fexpect"]
+	path = fexpect
+	url = git@gist.github.com:2313914.git
