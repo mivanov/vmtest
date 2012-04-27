@@ -29,3 +29,24 @@ def test_install(image_name):
         # Give localwiki db user permission to create a database, for tests
         sudo('psql -c "ALTER ROLE localwiki WITH CREATEDB;"', user='postgres')
         sudo('localwiki-manage test pages maps tags versioning diff ckeditor redirects users')
+
+def import_mediawiki(url=None):
+    import_prompts = []
+    if url:
+        import_prompts += fexpect.expect('Enter the address of a MediaWiki site (ex: http://arborwiki.org/):',
+                                         url)
+    import_prompts += fexpect.expect('Continue import? (yes/no)', 'yes')
+    with ec2_instance(ami_id=images['ubuntu10.04']):
+        sudo('apt-get -y install python-software-properties')
+        sudo('yes | apt-add-repository ppa:localwiki')
+        sudo('apt-get update')
+        with fexpect.expecting(prompts):
+            fexpect.sudo('apt-get -y --force-yes install localwiki')
+        with cd('/usr/share/localwiki'):
+            sudo('git clone git://github.com/mivanov/localwiki-importers.git')
+            with cd('localwiki-importers/mediawiki'):
+                sudo('source /usr/share/localwiki/env/bin/activate')
+                sudo('pip install -r requirements.txt')
+                sudo('deactivate')
+                with fexpect.expecting(import_prompts):
+                    fexpect.sudo('python import_mediawiki.py')

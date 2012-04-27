@@ -16,12 +16,11 @@ except:
 from boto import ec2
 from fabric.api import env
 
-
-class temporary_ec2_instance:
+class ec2_instance:
     def __init__(self, ami_id='ami-8cb33ebc'):
         self.instance = None
         self.ami_id = ami_id
-    
+
     def wait_until_state(self, state):
         while self.instance.state != state:
             print '.',
@@ -52,6 +51,10 @@ class temporary_ec2_instance:
         env.key_filename = EC2_KEY_FILE
         return self.instance
 
+    def __exit__(self, type, value, traceback):
+        print "Instance is still running: %s" % self.instance.public_dns_name
+
+class temporary_ec2_instance(ec2_instance):
     def __exit__(self, type, value, traceback):
         if self.instance:
             self.instance.terminate()
